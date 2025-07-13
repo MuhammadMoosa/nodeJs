@@ -1,24 +1,31 @@
 import http from 'node:http'
 import { getDataFromDB } from './database/db.js'
-
+import {getContinent} from './utility/util.js'
 const PORT = 8000
 
 const server = http.createServer(async (req, res) => {
   const destinations = await getDataFromDB()
+
+
+  /*
+Challenge:
+  1. Create a utility function to make this code DRYer.
+  2. Delete unnecessary code.
+*/
+
+
 
   if (req.url === '/api' && req.method === 'GET') {
     res.setHeader('Content-Type', 'application/json')
     res.statusCode = 200
     res.end(JSON.stringify(destinations))
   } else if (req.url.startsWith('/api/continent') && req.method === 'GET') {
-    const continent = req.url.split('/').pop() // Get the last part of the URL
-    
-    console.log(`Received request for continent: ${continent}`, destinations)
+    const continent = req.url.split('/').pop() // Get the last part of the URL 
 
-    const filteredDestinations = destinations.filter(destination => destination.continent.toLowerCase() === continent.toLowerCase())
-    console.log(`Filtering for continent: ${continent}`, filteredDestinations)
+    
     res.setHeader('Content-Type', 'application/json')
     res.statusCode = 200
+   let filteredDestinations =continent&& getContinent({destinations, continent}) // Use the utility function to filter destinations
     res.end(JSON.stringify({filteredDestinations}))
 
   /*
